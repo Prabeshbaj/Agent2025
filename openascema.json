@@ -1,362 +1,267 @@
-{
-  "openapi": "3.0.0",
-  "info": {
-    "title": "Coveo Search Integration API",
-    "description": "This API enables interaction with Coveo search services to retrieve different types of information including employee data, policy expertise, developer resources, and crew information.",
-    "version": "1.0.0"
-  },
-  "paths": {
-    "/Name": {
-      "post": {
-        "summary": "Retrieve employee details by name",
-        "description": "Searches for employees by their name and returns results from Coveo's employee directory.",
-        "operationId": "getEmployeesByName",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": { 
-                    "type": "string",
-                    "description": "Name of the employee to search for",
-                    "example": "John"
-                  }
-                },
-                "required": ["name"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Employee information retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "results": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "systitle": { 
-                            "type": "string",
-                            "description": "System title"
-                          },
-                          "shortname": { 
-                            "type": "string",
-                            "description": "Short name"
-                          },
-                          "sysworkemail": { 
-                            "type": "string",
-                            "description": "Work email"
-                          },
-                          "businesstitle": { 
-                            "type": "string",
-                            "description": "Business title"
-                          },
-                          "supervisorfullname": { 
-                            "type": "string",
-                            "description": "Supervisor's full name"
-                          },
-                          "cnprofilepicture": { 
-                            "type": "string",
-                            "description": "Profile picture URL"
-                          },
-                          "countryid": { 
-                            "type": "string",
-                            "description": "Country ID"
-                          },
-                          "buildingname": { 
-                            "type": "string",
-                            "description": "Building name"
-                          },
-                          "locationname": { 
-                            "type": "string",
-                            "description": "Location name"
-                          },
-                          "firstname": { 
-                            "type": "string",
-                            "description": "First name",
-                            "example": "John"
-                          },
-                          "lastname": { 
-                            "type": "string",
-                            "description": "Last name",
-                            "example": "Smith"
-                          },
-                          "department": { 
-                            "type": "string",
-                            "description": "Department name"
-                          },
-                          "crewid": { 
-                            "type": "string",
-                            "description": "Crew ID"
-                          },
-                          "supervisorcrewid": { 
-                            "type": "string",
-                            "description": "Supervisor's crew ID"
-                          },
-                          "supervisorfirstname": { 
-                            "type": "string",
-                            "description": "Supervisor's first name"
-                          },
-                          "percentscore": { 
-                            "type": "string",
-                            "description": "Percent match score"
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "No employees found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "example": "no result found"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/PolicyExpert": {
-      "post": {
-        "summary": "Find policy expertise information",
-        "description": "Searches for company policy information and documentation. Returns policy experts, documentation, and guidelines that match the query.",
-        "operationId": "findPolicyInformation",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "query": { 
-                    "type": "string",
-                    "description": "Search query for policy information",
-                    "example": "remote work policy"
-                  },
-                  "department": {
-                    "type": "string",
-                    "description": "Optional department filter",
-                    "example": "HR"
-                  }
-                },
-                "required": ["query"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Policy information retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "results": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "title": { "type": "string" },
-                          "description": { "type": "string" },
-                          "url": { "type": "string" },
-                          "experts": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "name": { "type": "string" },
-                                "email": { "type": "string" }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "formattedResponse": {
-                      "type": "object",
-                      "description": "ECS-formatted response for display"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Developer": {
-      "post": {
-        "summary": "Find developer resources and documentation",
-        "description": "Searches for developer-specific resources such as code examples, API documentation, and technical guidelines.",
-        "operationId": "findDeveloperResources",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "query": { 
-                    "type": "string",
-                    "description": "Search query for developer resources",
-                    "example": "AWS Lambda integration"
-                  },
-                  "technology": {
-                    "type": "string",
-                    "description": "Optional technology filter",
-                    "example": "Python"
-                  }
-                },
-                "required": ["query"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Developer resources retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "results": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "title": { "type": "string" },
-                          "description": { "type": "string" },
-                          "url": { "type": "string" },
-                          "codeSnippet": { "type": "string" }
-                        }
-                      }
-                    },
-                    "formattedResponse": {
-                      "type": "object",
-                      "description": "ECS-formatted response for display"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Crew": {
-      "post": {
-        "summary": "Find crew and team information",
-        "description": "Searches for information about teams, projects, and organizational structure.",
-        "operationId": "findCrewInformation",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "query": { 
-                    "type": "string",
-                    "description": "Search query for crew information",
-                    "example": "mobile development team"
-                  },
-                  "project": {
-                    "type": "string",
-                    "description": "Optional project filter",
-                    "example": "Customer App"
-                  }
-                },
-                "required": ["query"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Crew information retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "results": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "teamName": { "type": "string" },
-                          "description": { "type": "string" },
-                          "members": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "name": { "type": "string" },
-                                "role": { "type": "string" },
-                                "email": { "type": "string" }
-                              }
-                            }
-                          },
-                          "projects": {
-                            "type": "array",
-                            "items": { "type": "string" }
-                          }
-                        }
-                      }
-                    },
-                    "formattedResponse": {
-                      "type": "object",
-                      "description": "ECS-formatted response for display"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "securitySchemes": {
-      "ApiKeyAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-api-key",
-        "description": "API key for authentication with Coveo services"
-      }
-    }
-  },
-  "security": [
-    {
-      "ApiKeyAuth": []
-    }
-  ],
-  "x-amazon-apigateway-integration": {
-    "uri": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunction.Arn}/invocations",
-    "passthroughBehavior": "when_no_match",
-    "httpMethod": "POST",
-    "type": "aws_proxy"
-  }
-}
+openapi: 3.0.0
+info:
+  title: Coveo Search Integration API
+  description: This API enables interaction with Coveo search services to retrieve different types of information including employee data, policy expertise, developer resources, and crew information.
+  version: 1.0.0
+paths:
+  /Name:
+    post:
+      summary: Retrieve employee details by name
+      description: Searches for employees by their name and returns results from Coveo's employee directory.
+      operationId: getEmployeesByName
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the employee to search for
+                  example: John
+              required:
+                - name
+      responses:
+        '200':
+          description: Employee information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        systitle:
+                          type: string
+                          description: System title
+                        shortname:
+                          type: string
+                          description: Short name
+                        sysworkemail:
+                          type: string
+                          description: Work email
+                        businesstitle:
+                          type: string
+                          description: Business title
+                        supervisorfullname:
+                          type: string
+                          description: Supervisor's full name
+                        cnprofilepicture:
+                          type: string
+                          description: Profile picture URL
+                        countryid:
+                          type: string
+                          description: Country ID
+                        buildingname:
+                          type: string
+                          description: Building name
+                        locationname:
+                          type: string
+                          description: Location name
+                        firstname:
+                          type: string
+                          description: First name
+                          example: John
+                        lastname:
+                          type: string
+                          description: Last name
+                          example: Smith
+                        department:
+                          type: string
+                          description: Department name
+                        crewid:
+                          type: string
+                          description: Crew ID
+                        supervisorcrewid:
+                          type: string
+                          description: Supervisor's crew ID
+                        supervisorfirstname:
+                          type: string
+                          description: Supervisor's first name
+                        percentscore:
+                          type: string
+                          description: Percent match score
+        '404':
+          description: No employees found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: no result found
+  /PolicyExpert:
+    post:
+      summary: Find policy expertise information
+      description: Searches for company policy information and documentation. Returns policy experts, documentation, and guidelines that match the query.
+      operationId: findPolicyInformation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: Search query for policy information
+                  example: remote work policy
+                department:
+                  type: string
+                  description: Optional department filter
+                  example: HR
+              required:
+                - query
+      responses:
+        '200':
+          description: Policy information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                        description:
+                          type: string
+                        url:
+                          type: string
+                        experts:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                              email:
+                                type: string
+                  formattedResponse:
+                    type: object
+                    description: ECS-formatted response for display
+  /Developer:
+    post:
+      summary: Find developer resources and documentation
+      description: Searches for developer-specific resources such as code examples, API documentation, and technical guidelines.
+      operationId: findDeveloperResources
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: Search query for developer resources
+                  example: AWS Lambda integration
+                technology:
+                  type: string
+                  description: Optional technology filter
+                  example: Python
+              required:
+                - query
+      responses:
+        '200':
+          description: Developer resources retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                        description:
+                          type: string
+                        url:
+                          type: string
+                        codeSnippet:
+                          type: string
+                  formattedResponse:
+                    type: object
+                    description: ECS-formatted response for display
+  /Crew:
+    post:
+      summary: Find crew and team information
+      description: Searches for information about teams, projects, and organizational structure.
+      operationId: findCrewInformation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: Search query for crew information
+                  example: mobile development team
+                project:
+                  type: string
+                  description: Optional project filter
+                  example: Customer App
+              required:
+                - query
+      responses:
+        '200':
+          description: Crew information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        teamName:
+                          type: string
+                        description:
+                          type: string
+                        members:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                              role:
+                                type: string
+                              email:
+                                type: string
+                        projects:
+                          type: array
+                          items:
+                            type: string
+                  formattedResponse:
+                    type: object
+                    description: ECS-formatted response for display
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key for authentication with Coveo services
+security:
+  - ApiKeyAuth: []
+x-amazon-apigateway-integration:
+  uri: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunction.Arn}/invocations
+  passthroughBehavior: when_no_match
+  httpMethod: POST
+  type: aws_proxy
