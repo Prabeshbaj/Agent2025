@@ -1,0 +1,333 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Coveo Search Integration API",
+    "description": "This API enables interaction with Coveo search services to retrieve different types of information including employee data, policy expertise, developer resources, and crew information. Each endpoint serves a specific information need and returns formatted data for ECS forms.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/Name": {
+      "post": {
+        "summary": "Retrieve employee details by name",
+        "description": "Searches for an employee by their name and returns comprehensive profile information including contact details, position, department, and manager information. This endpoint connects to a different Coveo API than the other three endpoints.",
+        "operationId": "getEmployeeByName",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { 
+                    "type": "string",
+                    "description": "Full or partial name of the employee to search for",
+                    "example": "John Smith"
+                  }
+                },
+                "required": ["name"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Employee information retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "fname": { 
+                      "type": "string",
+                      "description": "Employee's first name",
+                      "example": "John"
+                    },
+                    "lastname": { 
+                      "type": "string",
+                      "description": "Employee's last name",
+                      "example": "Smith"
+                    },
+                    "businessTitle": { 
+                      "type": "string",
+                      "description": "Employee's job title",
+                      "example": "Senior Software Engineer" 
+                    },
+                    "departmentName": { 
+                      "type": "string",
+                      "description": "Department where the employee works",
+                      "example": "Engineering"
+                    },
+                    "locationName": { 
+                      "type": "string",
+                      "description": "Employee's office location",
+                      "example": "Seattle HQ"
+                    },
+                    "crewId": { 
+                      "type": "string",
+                      "description": "Employee's unique identifier",
+                      "example": "E12345"
+                    },
+                    "email": { 
+                      "type": "string",
+                      "description": "Employee's email address",
+                      "example": "john.smith@company.com"
+                    },
+                    "managerName": { 
+                      "type": "string",
+                      "description": "Name of the employee's manager",
+                      "example": "Jane Doe"
+                    },
+                    "managerCrewId": { 
+                      "type": "string",
+                      "description": "Unique identifier of the employee's manager",
+                      "example": "E54321"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Employee not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "No employee found with the provided name"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/PolicyExpert": {
+      "post": {
+        "summary": "Find policy expertise information",
+        "description": "Searches for company policy information and documentation. Returns policy experts, documentation, and guidelines that match the query. Uses the same underlying Coveo API as Developer and Crew endpoints but with policy-specific parameters.",
+        "operationId": "findPolicyInformation",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": { 
+                    "type": "string",
+                    "description": "Search query for policy information",
+                    "example": "remote work policy"
+                  },
+                  "department": {
+                    "type": "string",
+                    "description": "Optional department filter",
+                    "example": "HR"
+                  }
+                },
+                "required": ["query"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy information retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": { "type": "string" },
+                          "description": { "type": "string" },
+                          "url": { "type": "string" },
+                          "experts": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": { "type": "string" },
+                                "email": { "type": "string" }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "formattedResponse": {
+                      "type": "object",
+                      "description": "ECS-formatted response for display"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Developer": {
+      "post": {
+        "summary": "Find developer resources and documentation",
+        "description": "Searches for developer-specific resources such as code examples, API documentation, and technical guidelines. Uses the same underlying Coveo API as PolicyExpert and Crew endpoints but with developer-specific parameters.",
+        "operationId": "findDeveloperResources",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": { 
+                    "type": "string",
+                    "description": "Search query for developer resources",
+                    "example": "AWS Lambda integration"
+                  },
+                  "technology": {
+                    "type": "string",
+                    "description": "Optional technology filter",
+                    "example": "Python"
+                  }
+                },
+                "required": ["query"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Developer resources retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": { "type": "string" },
+                          "description": { "type": "string" },
+                          "url": { "type": "string" },
+                          "codeSnippet": { "type": "string" }
+                        }
+                      }
+                    },
+                    "formattedResponse": {
+                      "type": "object",
+                      "description": "ECS-formatted response for display"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Crew": {
+      "post": {
+        "summary": "Find crew and team information",
+        "description": "Searches for information about teams, projects, and organizational structure. Uses the same underlying Coveo API as PolicyExpert and Developer endpoints but with team-specific parameters.",
+        "operationId": "findCrewInformation",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": { 
+                    "type": "string",
+                    "description": "Search query for crew information",
+                    "example": "mobile development team"
+                  },
+                  "project": {
+                    "type": "string",
+                    "description": "Optional project filter",
+                    "example": "Customer App"
+                  }
+                },
+                "required": ["query"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Crew information retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "teamName": { "type": "string" },
+                          "description": { "type": "string" },
+                          "members": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": { "type": "string" },
+                                "role": { "type": "string" },
+                                "email": { "type": "string" }
+                              }
+                            }
+                          },
+                          "projects": {
+                            "type": "array",
+                            "items": { "type": "string" }
+                          }
+                        }
+                      }
+                    },
+                    "formattedResponse": {
+                      "type": "object",
+                      "description": "ECS-formatted response for display"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "API key for authentication with Coveo services"
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "x-amazon-apigateway-integration": {
+    "uri": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunction.Arn}/invocations",
+    "passthroughBehavior": "when_no_match",
+    "httpMethod": "POST",
+    "type": "aws_proxy"
+  }
+}
