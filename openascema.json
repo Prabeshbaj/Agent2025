@@ -2,15 +2,15 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Coveo Search Integration API",
-    "description": "This API enables interaction with Coveo search services to retrieve different types of information including employee data, policy expertise, developer resources, and crew information. Each endpoint serves a specific information need and returns formatted data for ECS forms.",
+    "description": "This API enables interaction with Coveo search services to retrieve different types of information including employee data, policy expertise, developer resources, and crew information.",
     "version": "1.0.0"
   },
   "paths": {
     "/Name": {
       "post": {
         "summary": "Retrieve employee details by name",
-        "description": "Searches for an employee by their name and returns comprehensive profile information including contact details, position, department, and manager information. This endpoint connects to a different Coveo API than the other three endpoints.",
-        "operationId": "getEmployeeByName",
+        "description": "Searches for employees by their name and returns results from Coveo's employee directory.",
+        "operationId": "getEmployeesByName",
         "requestBody": {
           "required": true,
           "content": {
@@ -20,8 +20,8 @@
                 "properties": {
                   "name": { 
                     "type": "string",
-                    "description": "Full or partial name of the employee to search for",
-                    "example": "John Smith"
+                    "description": "Name of the employee to search for",
+                    "example": "John"
                   }
                 },
                 "required": ["name"]
@@ -37,50 +37,79 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "fname": { 
-                      "type": "string",
-                      "description": "Employee's first name",
-                      "example": "John"
-                    },
-                    "lastname": { 
-                      "type": "string",
-                      "description": "Employee's last name",
-                      "example": "Smith"
-                    },
-                    "businessTitle": { 
-                      "type": "string",
-                      "description": "Employee's job title",
-                      "example": "Senior Software Engineer" 
-                    },
-                    "departmentName": { 
-                      "type": "string",
-                      "description": "Department where the employee works",
-                      "example": "Engineering"
-                    },
-                    "locationName": { 
-                      "type": "string",
-                      "description": "Employee's office location",
-                      "example": "Seattle HQ"
-                    },
-                    "crewId": { 
-                      "type": "string",
-                      "description": "Employee's unique identifier",
-                      "example": "E12345"
-                    },
-                    "email": { 
-                      "type": "string",
-                      "description": "Employee's email address",
-                      "example": "john.smith@company.com"
-                    },
-                    "managerName": { 
-                      "type": "string",
-                      "description": "Name of the employee's manager",
-                      "example": "Jane Doe"
-                    },
-                    "managerCrewId": { 
-                      "type": "string",
-                      "description": "Unique identifier of the employee's manager",
-                      "example": "E54321"
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "systitle": { 
+                            "type": "string",
+                            "description": "System title"
+                          },
+                          "shortname": { 
+                            "type": "string",
+                            "description": "Short name"
+                          },
+                          "sysworkemail": { 
+                            "type": "string",
+                            "description": "Work email"
+                          },
+                          "businesstitle": { 
+                            "type": "string",
+                            "description": "Business title"
+                          },
+                          "supervisorfullname": { 
+                            "type": "string",
+                            "description": "Supervisor's full name"
+                          },
+                          "cnprofilepicture": { 
+                            "type": "string",
+                            "description": "Profile picture URL"
+                          },
+                          "countryid": { 
+                            "type": "string",
+                            "description": "Country ID"
+                          },
+                          "buildingname": { 
+                            "type": "string",
+                            "description": "Building name"
+                          },
+                          "locationname": { 
+                            "type": "string",
+                            "description": "Location name"
+                          },
+                          "firstname": { 
+                            "type": "string",
+                            "description": "First name",
+                            "example": "John"
+                          },
+                          "lastname": { 
+                            "type": "string",
+                            "description": "Last name",
+                            "example": "Smith"
+                          },
+                          "department": { 
+                            "type": "string",
+                            "description": "Department name"
+                          },
+                          "crewid": { 
+                            "type": "string",
+                            "description": "Crew ID"
+                          },
+                          "supervisorcrewid": { 
+                            "type": "string",
+                            "description": "Supervisor's crew ID"
+                          },
+                          "supervisorfirstname": { 
+                            "type": "string",
+                            "description": "Supervisor's first name"
+                          },
+                          "percentscore": { 
+                            "type": "string",
+                            "description": "Percent match score"
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -88,7 +117,7 @@
             }
           },
           "404": {
-            "description": "Employee not found",
+            "description": "No employees found",
             "content": {
               "application/json": {
                 "schema": {
@@ -96,7 +125,7 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "No employee found with the provided name"
+                      "example": "no result found"
                     }
                   }
                 }
@@ -109,7 +138,7 @@
     "/PolicyExpert": {
       "post": {
         "summary": "Find policy expertise information",
-        "description": "Searches for company policy information and documentation. Returns policy experts, documentation, and guidelines that match the query. Uses the same underlying Coveo API as Developer and Crew endpoints but with policy-specific parameters.",
+        "description": "Searches for company policy information and documentation. Returns policy experts, documentation, and guidelines that match the query.",
         "operationId": "findPolicyInformation",
         "requestBody": {
           "required": true,
@@ -178,7 +207,7 @@
     "/Developer": {
       "post": {
         "summary": "Find developer resources and documentation",
-        "description": "Searches for developer-specific resources such as code examples, API documentation, and technical guidelines. Uses the same underlying Coveo API as PolicyExpert and Crew endpoints but with developer-specific parameters.",
+        "description": "Searches for developer-specific resources such as code examples, API documentation, and technical guidelines.",
         "operationId": "findDeveloperResources",
         "requestBody": {
           "required": true,
@@ -238,7 +267,7 @@
     "/Crew": {
       "post": {
         "summary": "Find crew and team information",
-        "description": "Searches for information about teams, projects, and organizational structure. Uses the same underlying Coveo API as PolicyExpert and Developer endpoints but with team-specific parameters.",
+        "description": "Searches for information about teams, projects, and organizational structure.",
         "operationId": "findCrewInformation",
         "requestBody": {
           "required": true,
