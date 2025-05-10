@@ -1,0 +1,75 @@
+import sys
+from flask import Flask, Response, request, jsonify, stream_with_context
+from flask_cors import CORS
+import boto3
+import json
+import logging
+
+app = Flask(__name__)
+CORS(app)
+
+bedrock_agent_runtime = boto3.client(
+    service_name='bedrock-agent-runtime',
+    region_name='us-east-1'
+)
+
+@app.route('/api/bedrock-agent/chat', methods=['POST'])
+def bedrock_agent_chat():
+    try:
+        request_data = request.json
+        agent_id = request_data.get('agent_id')
+        agent_alias_id = request_data.get('agent_alias_id')
+        input_text = request_data.get('input_text')
+        session_id = request_data.get('session_id', '')
+        
+        if not all([agent_id, agent_alias_id, input_text]):
+            return jsonify({"error": "Missing required parameters"}), 400
+            
+        def generate():
+            try:
+                response = bedrock_agent_runtime.invoke_agent(
+                    agentId=agent_id,
+                    agentAliasId=agent_alias_id,
+                    sessionId=session_id if session_id else None,
+                    inputText=input_text,
+                    enableTrace=True
+                )
+                
+                # Process each chunk immediately as it arrives
+                for event in response['completion']:
+                    if 'chunk' in event:
+                        chunk_data = event['chunk']['bytes'].decode('utf-8')
+                        content = f"data: {json.dumps({'text': chunk_data})}\n\n"
+                        yield content
+                        
+                        # Force flush (helps with some WSGI servers)
+                        if hasattr(sys.stdout, 'flush'):
+                            sys.stdout.flush()
+                
+            except Exception as e:
+                app.logger.error(f"Error in stream: {str(e)}")
+                yield f"data: {json.dumps({'error': str(e)})}\n\n"
+            finally:
+                yield f"data: {json.dumps({'done': True})}\n\n"
+            
+        # Create response with no buffering
+        response = Response(
+            stream_with_context(generate()),
+            mimetype='text/event-stream'
+        )
+        
+        # Disable various forms of buffering
+        response.headers['X-Accel-Buffering'] = 'no'  # For Nginx
+        response.headers['Cache-Control'] = 'no-cache'
+        response.headers['Connection'] = 'keep-alive'
+        response.headers['Transfer-Encoding'] = 'chunked'
+        
+        return response
+        
+    except Exception as e:
+        app.logger.error(f"Error setting up streaming: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == '__main__':
+    # Use threaded=True for better streaming performance
+    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)
